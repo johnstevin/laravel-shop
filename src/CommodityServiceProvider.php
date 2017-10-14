@@ -83,7 +83,6 @@ class CommodityServiceProvider extends ServiceProvider {
 //				$events
 //			);
 //		});
-		$this->registerSearch();
 	}
 
 	/**
@@ -96,8 +95,4 @@ class CommodityServiceProvider extends ServiceProvider {
 		return array();
 	}
 
-	protected function registerSearch()
-    {
-        $this->app->singleton(RepositoryInterface::class, SearchRepository::class);
-    }
 }

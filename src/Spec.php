@@ -7,31 +7,39 @@
  *
  */
 
-namespace  SimpleShop\Commodity;
-use SimpleShop\Commodity\Spec\Info;
-use SimpleShop\Commodity\Spec\Value;
+namespace SimpleShop\Commodity;
 
+
+use SimpleShop\Commodity\Repositories\Criteria\SpecGoodsId;
+use SimpleShop\Commodity\Repositories\GoodsProductRepository;
+use SimpleShop\Commodity\Repositories\GoodsRepository;
+use SimpleShop\Commodity\Repositories\GoodsSpecRepository;
 
 /**
- * This is the Commodity class.
+ * This is the attr class.
  *
  * @author Wangzd <wangzhoudong@foxmail.com>
  */
 class Spec
 {
+    protected $goodsRepository;
+    protected $goodsProductRepository;
+    protected $goodsAttrRepository;
+    protected $attribute;
 
-    /**
-     * 品牌基本管理
-     * @return \Illuminate\Foundation\Application|mixed
-     *
-     */
-    static function info() {
-        return app(Info::class);
+    public function __construct(GoodsRepository $goodsRepository,
+                                GoodsProductRepository $goodsProductRepository,
+                                GoodsSpecRepository $goodsSpecRepository
+                            )
+    {
+        $this->goodsRepository = $goodsRepository;
+        $this->goodsProductRepository = $goodsProductRepository;
+        $this->goodsSpecRepository = $goodsSpecRepository;
     }
 
-    static function value() {
-        return app(Value::class);
-    }
 
+    public function getValueIdsGoods($goodsId) {
+        return $this->goodsSpecRepository->pushCriteria(new SpecGoodsId($goodsId))->pluck('spec_value_id');
+    }
 
 }

@@ -2,6 +2,10 @@
 
 namespace SimpleShop\Commodity\Models;
 
+use SimpleShop\Brand\Models\ShopBrand;
+use SimpleShop\Cate\Models\ShopCate;
+use SimpleShop\Store\Models\ShopStoreModel;
+
 /**
  * @description 商品SPU表
  * @author  wangzhoudong  <admin@yijinba.com>;
@@ -24,7 +28,7 @@ class ShopGoodsModel extends BaseModel
     protected $primaryKey = 'id';
 
     //分页
-    protected $perPage = PAGE_NUMS;
+    protected $perPage = 30;
 
     /**
      * 可以被集体附值的表的字段
@@ -35,6 +39,7 @@ class ShopGoodsModel extends BaseModel
         'store_id',
         'store_name',
         'price',
+        'sku_id',
         'max_price',
         'name',
         'cover_path',
@@ -46,10 +51,10 @@ class ShopGoodsModel extends BaseModel
         'hot',
         'sort',
         'status',
-        'verify',
+        'unit_id',
+        'logistics_id',
         'begin_num',
-        'unit',
-        'price_sku_id'
+        'verify'
     ];
 
 
@@ -59,12 +64,26 @@ class ShopGoodsModel extends BaseModel
      */
     public function skuInfo()
     {
-        return $this->hasMany('SimpleShop\Commodity\Models\ShopGoodsProductModel', 'goods_id', 'id');
+        return $this->hasMany(ShopGoodsProductModel::class, 'goods_id', 'id');
     }
 
     public function attrInfo()
     {
-        return $this->hasMany('SimpleShop\Commodity\Models\ShopGoodsAttributeModel', 'goods_id', 'id');
+        return $this->hasMany(ShopGoodsAttributeModel::class, 'goods_id', 'id');
+    }
+
+    public function specInfo()
+    {
+        return $this->hasMany(ShopGoodsSpecModel::class, 'goods_id', 'id');
+    }
+    /**
+     * 获取商品分类
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function cateInfo()
+    {
+        return $this->hasOne(ShopCate::class, 'id', 'cate_id');
     }
 
     /**
@@ -72,10 +91,11 @@ class ShopGoodsModel extends BaseModel
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function cate()
+    public function storeInfo()
     {
-        return $this->hasOne(ShopCategoryModel::class, 'id', 'cate_id');
+        return $this->hasOne(ShopStoreModel::class, 'id', 'store_id');
     }
+
 
     /**
      * 获取商品图片
@@ -87,8 +107,8 @@ class ShopGoodsModel extends BaseModel
         return $this->hasMany(ShopGoodsImagesModel::class, 'goods_id', 'id');
     }
 
-    public function brand()
+    public function brandInfo()
     {
-        return $this->hasOne(ShopBrandModel::class, 'id', 'brand_id');
+        return $this->hasOne(ShopBrand::class, 'id', 'brand_id');
     }
 }

@@ -27,7 +27,7 @@ class ShopGoodsProductModel extends BaseModel
     protected $primaryKey = 'id';
 
     //分页
-    protected $perPage = PAGE_NUMS;
+    protected $perPage = 30;
 
     /**
      * 可以被集体附值的表的字段
