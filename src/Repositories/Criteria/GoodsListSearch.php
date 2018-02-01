@@ -37,7 +37,8 @@ class GoodsListSearch extends Criteria
 
         if (! empty($this->search['cateIdAndChild'])) {
             // 获取该cate_id有多少三级的cate_id
-            $cateIds = app(Cate::class)->getChildren($this->search['cateIdAndChild'],true);
+            $cateIds = app(Cate::class)->getChildren($this->search['cateIdAndChild'],true)->toArray();
+            $cateIds = array_column($cateIds, 'id');
             $model = $model->whereIn('shop_goods.cate_id', $cateIds);
         }
 
@@ -56,8 +57,6 @@ class GoodsListSearch extends Criteria
                 }
                 return $query;
             });
-
-
         }
         if (! empty($this->search['min_price']) && ! empty($this->search['max_price'])) {
             $model = $model->where('shop_goods.price', '>', $this->search['min_price'])

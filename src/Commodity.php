@@ -10,14 +10,19 @@
 namespace SimpleShop\Commodity;
 
 use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Database\Eloquent\Model;
 use SimpleShop\Attr\Attribute;
 use SimpleShop\Commodity\Events\GoodsEvent;
+use SimpleShop\Commodity\Models\ShopGoodsModel;
+use SimpleShop\Commodity\Models\ShopGoodsProductModel;
 use SimpleShop\Commodity\Repositories\Criteria\GoodsMultiWhere;
 use SimpleShop\Commodity\Repositories\Criteria\GoodsOrder;
+use SimpleShop\Commodity\Repositories\Criteria\Recommend;
 use SimpleShop\Commodity\Repositories\GoodsAttrRepository;
 use SimpleShop\Commodity\Repositories\GoodsImagesRepository;
 use SimpleShop\Commodity\Repositories\GoodsProductRepository;
 use SimpleShop\Commodity\Repositories\GoodsRepository;
+use SimpleShop\Commons\Exceptions\DatabaseException;
 use SimpleShop\Spec\Spec;
 /**
  * This is the Commodity class.
@@ -57,6 +62,7 @@ class Commodity
      */
     public function search(array $search = [], array $orderBy = [], $page = 1, $pageSize = 10)
     {
+
         return $this->goodsRepository
             ->pushCriteria(new GoodsMultiWhere($search))
             ->pushCriteria(new GoodsOrder($orderBy))
@@ -67,34 +73,43 @@ class Commodity
 
     /**
      * @param $data
+     *
+     * @return
+     * @throws \Exception
+     * @throws \Throwable
      */
 
     public function create($data) {
         $priceSection = $this->goodsProductRepository->getPriceSection($data['spec']);
         $data['price'] = $priceSection[0];
         $data['max_price'] = $priceSection[1];
-        \DB::transaction(function() use ($data) {
+
+        $goods = \DB::transaction(function() use ($data) {
             $goods = $this->goodsRepository->create($data);
             if (isset($data['imgs'])) {
                 $this->goodsImagesRepository->adds($goods->id, $data['imgs']);
             }
-
             if (isset($data['attr'])) {
                 $this->goodsAttrRepository->adds($goods->id, $data['attr']);
             }
+
             if(isset($data['spec'])) {
                 app(Sku::class)->create($goods,$data['spec']);
                 $this->goodsRepository->update($goods->id,
-                    ['sku_id' => $this->goodsProductRepository->getMinSkuId($goods->id)]);
+                    ['sku_id' => $this->goodsProductRepository->getMinSkuId($goods->id),'sku_num'=>count($data['spec'])]);
             }
             if (isset($data['add_attr'])) {
                 app(Attribute::class)->bindGoods($goods->id, $data['add_attr']);
             }
+
             if (isset($data['add_spec'])) {
                 app(Spec::class)->bindGoods($goods->id, $data['add_spec']);
             }
             event(new GoodsEvent($goods->id, 'added'));
+            return $goods;
         });
+
+        return $goods->id;
     }
 
     /**
@@ -105,9 +120,10 @@ class Commodity
         $priceSection = $this->goodsProductRepository->getPriceSection($data['spec']);
         $data['price'] = $priceSection[0];
         $data['max_price'] = $priceSection[1];
+        $data['logistics_id'] = isset($data['logistics_id']) ? $data['logistics_id'] : null;
         \DB::transaction(function() use ($goodsId,$data) {
             $goods = $this->goodsRepository->find($goodsId);
-            $goods->save($data);
+            $goods->update($data);
             if (isset($data['imgs'])) {
                 $this->goodsImagesRepository->updates($goods->id, $data['imgs']);
             }
@@ -125,7 +141,7 @@ class Commodity
     }
 
     public function show($id) {
-      $data = $this->goodsRepository->find($id);
+      $data = $this->goodsRepository->with(['skuInfo', 'units'])->find($id);
 
       return $data;
     }
@@ -144,7 +160,7 @@ class Commodity
         \DB::transaction(function() use ($goodsId) {
             $this->goodsRepository->update($goodsId,['status' => 1]);
             $this->goodsProductRepository->upGoods($goodsId);
-            event(new GoodsEvent($goodsId, 'updated'));
+            event(new GoodsEvent($goodsId, 'upped'));
         });
     }
 
@@ -157,7 +173,58 @@ class Commodity
         \DB::transaction(function() use ($goodsId) {
             $this->goodsRepository->update($goodsId,['status' => 0]);
             $this->goodsProductRepository->downGoods($goodsId);
-            event(new GoodsEvent($goodsId, 'updated'));
+            event(new GoodsEvent($goodsId, 'downed'));
         });
+    }
+
+    /**
+     * 是否有该店铺存在
+     *
+     * @param $storeId
+     * @return mixed
+     */
+    public function isHasStore($storeId)
+    {
+        return $this->goodsRepository->findBy("store_id", $storeId);
+    }
+
+    /**
+     * 是否有该分类存在
+     *
+     * @param $cateId
+     * @return mixed
+     */
+    public function isHasCate($cateId)
+    {
+        return $this->goodsRepository->findBy("cate_id", $cateId);
+    }
+
+
+    public function deductStock($skuId,$number) {
+        $obj = ShopGoodsProductModel::find($skuId);
+        $edit_info['stock'] = \DB::raw("stock-$number");
+        $ok = ShopGoodsProductModel::where('id',$skuId)->where(\DB::raw("stock-$number"),">=",0)->update($edit_info);
+        if(!$ok) {
+            throw new DatabaseException($obj->name . "库存不足");
+        }
+        return $ok;
+    }
+
+    public function addStock($skuId,$number) {
+        $edit_info['stock'] = \DB::raw("stock+$number");
+        return ShopGoodsProductModel::where('id',$skuId)->update($edit_info);
+    }
+
+    /**
+     * 获取按热度排序的推荐列表
+     *
+     * @param int $page
+     * @param int $perPage
+     *
+     * @return mixed
+     */
+    public function getRecommendHotList(int $page = 1, int $perPage = 6)
+    {
+        return $this->goodsRepository->getByCriteria(new Recommend())->paginate($perPage, ['*'], $page);
     }
 }

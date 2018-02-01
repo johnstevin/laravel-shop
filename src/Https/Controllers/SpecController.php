@@ -14,6 +14,7 @@ namespace SimpleShop\Commodity\Https\Controllers;
 use Illuminate\Http\Request;
 use SimpleShop\Commodity\Spec;
 use SimpleShop\Commons\Https\Controllers\Controller;
+use SimpleShop\Commons\Utils\ReturnJson;
 
 class SpecController extends Controller
 {
@@ -31,7 +32,11 @@ class SpecController extends Controller
 
 
     public function getValueIdsGoods($goodsId) {
-        return $this->specService->getValueIdsGoods($goodsId);
+        return ReturnJson::success($this->specService->getValueIdsGoods($goodsId));
+    }
+
+    public function groupGoodsItem($goodsId) {
+        return ReturnJson::success($this->specService->groupGoodsItem($goodsId));
     }
 
 

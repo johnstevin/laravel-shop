@@ -18,7 +18,7 @@ class ShopGoodsProductModel extends BaseModel
      * 数据表名
      *
      * @var string
-     *
+     *C
      */
     protected $table = 'shop_goods_product';
     /**
@@ -52,6 +52,7 @@ class ShopGoodsProductModel extends BaseModel
         'spec_str',
     ];
 
+
     public function attrChoose()
     {
         return $this->hasMany(ShopGoodsAttributeModel::class, 'goods_id', 'goods_id');
@@ -67,7 +68,7 @@ class ShopGoodsProductModel extends BaseModel
         return $this->hasMany(ShopGoodsImagesModel::class, 'id', 'goods_id');
     }
 
-    public function goods()
+    public function goodsInfo()
     {
         return $this->belongsTo(ShopGoodsModel::class, 'goods_id', 'id');
     }

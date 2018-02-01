@@ -3,7 +3,7 @@
 namespace SimpleShop\Commodity\Https\Requests\Api;
 
 
-use SimpleShop\Commons\Utils\Requests\Request;
+use SimpleShop\Commons\Requests\Request;
 
 class SubmitRequest extends Request
 {

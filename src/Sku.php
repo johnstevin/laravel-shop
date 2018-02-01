@@ -9,6 +9,7 @@
 
 namespace SimpleShop\Commodity;
 
+use SimpleShop\Commodity\Events\ProductEvent;
 use SimpleShop\Commodity\Repositories\Criteria\GoodsProduct;
 use SimpleShop\Commodity\Repositories\Criteria\ProductMultiWhere;
 use SimpleShop\Commodity\Repositories\CriteriaProduct\Order;
@@ -97,6 +98,7 @@ class Sku
             }
             $this->goodsProductRepository->update($id ,['status' => 1]);
             $this->goodsRepository->update($data->goods_id,['status' => 1]);
+            event(new ProductEvent($id, 'upped'));
         });
         return true;
     }
@@ -111,16 +113,39 @@ class Sku
      */
     public function down($id)
     {
-
         \DB::transaction(function() use ($id) {
             $data = $this->goodsProductRepository->find($id);
             if (! $data) {
                 throw new \Exception('传入的ID不对!');
             }
             $this->goodsProductRepository->update($id, ['status' => 0]);
-            $this->goodsRepository->update($data->goods_id,['status' => 0]);
+            $allCount = $this->goodsProductRepository->getCountByGoods($data->goods_id);
+            $count = $this->goodsProductRepository->getDownCount($data->goods_id);
+            if ($count === $allCount) {
+                $this->goodsRepository->update($data->goods_id,['status' => 0]);
+            }
+            event(new ProductEvent($id, 'downed'));
         });
         return true;
     }
 
+    /**
+     * @param $id
+     *
+     * @return mixed
+     */
+    public function find($id)
+    {
+        return $this->goodsProductRepository->find($id);
+    }
+
+    /**
+     * @param $id
+     *
+     * @return \Illuminate\Database\Eloquent\Collection|null
+     */
+    public function getSkuListByGoodsId($id)
+    {
+        return $this->goodsProductRepository->findWhere(['goods_id' => $id]);
+    }
 }

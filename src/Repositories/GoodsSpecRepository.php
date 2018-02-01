@@ -14,6 +14,8 @@ namespace SimpleShop\Commodity\Repositories;
 use SimpleShop\Commodity\Models\ShopGoodsSpecModel;
 use SimpleShop\Commons\Exceptions\Exception;
 use SimpleShop\Repositories\Eloquent\Repository;
+use SimpleShop\Spec\Models\ShopSpecModel;
+use SimpleShop\Spec\Models\ShopSpecValueModel;
 use SimpleShop\Spec\Spec;
 
 /**
@@ -79,7 +81,7 @@ class GoodsSpecRepository extends Repository
             ->where("$tGoodSpec.goods_id",$goods_id)
             ->leftJoin($tSpec,"$tSpec.id","=","$tGoodSpec.spec_id")
             ->leftJoin($tSpecValue,"$tSpecValue.id","=","$tGoodSpec.spec_value_id")
-            ->get()->toArray();
+            ->get();
         return $data;
     }
 

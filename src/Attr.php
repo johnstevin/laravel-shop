@@ -56,4 +56,13 @@ class Attr
         return $this->goodsAttrRepository->pushCriteria(new AttrGoodsId($goodsId))->pluck('attr_value_id');
     }
 
+    public function groupGoodsItem($goodsId) {
+        $data = $this->goodsAttrRepository->getByGoods($goodsId);
+        $temp = [];
+        foreach ($data as $item) {
+            $temp[$item['attr_name']][] = $item;
+        }
+        return $temp;
+
+    }
 }

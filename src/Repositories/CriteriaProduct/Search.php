@@ -46,6 +46,10 @@ class Search extends Criteria
             $model = $model->where('tag', $this->search['tag']);
         }
 
+        if (isset($this->search['name'])) {
+            $model = $model->where('shop_goods_product.name', 'like', "%{$this->search['name']}%");
+        }
+
         return $model;
     }
 }

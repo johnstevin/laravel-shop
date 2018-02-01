@@ -45,6 +45,10 @@ class ProductId extends Criteria
             }
         }
 
+        if (isset($this->search['sku_id'])) {
+            $model = $model->where('shop_goods_product.id', $this->search['sku_id']);
+        }
+
         return $model;
     }
 

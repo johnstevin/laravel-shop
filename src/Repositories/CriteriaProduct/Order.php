@@ -41,9 +41,18 @@ class Order extends Criteria
     public function apply($model, Repository $repository)
     {
         foreach ($this->order as $field => $sort) {
-            $model = $model->orderBy($field, $sort);
+            $model = $model->orderBy('shop_goods_product.' . $field, $sort);
         }
         return $model;
+    }
+
+    public function set(array $order)
+    {
+        if (! empty($order)) {
+            $order = ['id' => 'desc'];
+        }
+
+        return $order;
     }
 
 }

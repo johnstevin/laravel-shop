@@ -41,5 +41,12 @@ class Spec
     public function getValueIdsGoods($goodsId) {
         return $this->goodsSpecRepository->pushCriteria(new SpecGoodsId($goodsId))->pluck('spec_value_id');
     }
-
+    public function groupGoodsItem($goodsId) {
+        $data = $this->goodsSpecRepository->getByGoods($goodsId);
+        $temp = [];
+        foreach ($data as $item) {
+            $temp[$item['spec_name']][] = $item;
+        }
+        return $temp;
+    }
 }

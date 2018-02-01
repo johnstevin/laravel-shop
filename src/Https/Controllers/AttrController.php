@@ -43,11 +43,15 @@ class AttrController extends Controller
     public function getListByGoods($goodsId)
     {
         /** @var TYPE_NAME $goodsId */
-        return  $this->attrService->getListByGoods($goodsId);
+        return  ReturnJson::success($this->attrService->getListByGoods($goodsId));
     }
 
     public function getValueIdsGoods($goodId) {
-        return $this->attrService->getValueIdsGoods($goodId);
+        return ReturnJson::success($this->attrService->getValueIdsGoods($goodId));
+    }
+
+    public function groupGoodsItem($goodsId) {
+        return ReturnJson::success($this->attrService->groupGoodsItem($goodsId));
     }
 
 

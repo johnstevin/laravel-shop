@@ -38,18 +38,24 @@ class GoodsProductRepository extends Repository
      */
     public function getPriceSection($data) {
         $minPrice = $data[key($data)]['price'];
-        $maxPrice = 0;
+        $maxPrice = $minPrice;
         foreach($data as $val) {
             $minPrice = $val['price']<$minPrice ? $val['price'] : $minPrice ;
             $maxPrice = $val['price']>$maxPrice ? $val['price'] : $maxPrice ;
         }
+        $minPrice = $minPrice!="" ? $minPrice : null;
+        $maxPrice = $maxPrice!="" ? $maxPrice : null;
 
         return [$minPrice,$maxPrice];
     }
 
 
     public function getMinSkuId($spuId) {
-        return $this->model->where("goods_id",$spuId)->min('id');
+        $data = $this->model->select('id')->where("goods_id",$spuId)->orderBy('price','ASC')->first();
+        if($data) {
+            return $data->id;
+        }
+        return '';
     }
 
     /**
@@ -62,7 +68,7 @@ class GoodsProductRepository extends Repository
 
         $add['sku_name'] = app(Spec::class)->getNameByValues($data['spec_value']);
         $add['name'] = $goodsObj->name . $add['sku_name'];
-        $add['price'] = $data['price'];
+        if(isset($data['price']) && $data['price']!=='' ) $add['price'] = $data['price'];
         if(isset($data['market_price']) ) $add['market_price'] = $data['market_price'];
         if(isset($data['cost_price']) ) $add['cost_price'] = $data['cost_price'];
         if(isset($data['weight']) ) $add['weight'] = $data['weight'];

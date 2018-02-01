@@ -35,7 +35,9 @@ class CommodityController extends Controller
      * 列表
      *
      * @param Request $request
+     *
      * @return mixed
+     * @throws \Exception
      */
     public function index(Request $request)
     {
@@ -78,26 +80,28 @@ class CommodityController extends Controller
     /**
      * 更新
      *
-     * @param $id
-     * @param Request $request
+     * @param               $id
+     * @param SubmitRequest $request
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function update($id, SubmitRequest $request)
     {
         $this->commodityService->update($id,$request->all());
-        return ReturnJson::success();
+        return ReturnJson::success(['id'=>$id]);
     }
 
     /**
      * 增添
      *
-     * @param Request $request
+     * @param SubmitRequest $request
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(SubmitRequest $request)
     {
         $resData = $this->commodityService->create($request->all());
-        return ReturnJson::success($resData);
+        return ReturnJson::success(['id'=>$resData]);
     }
 
     /**
@@ -109,7 +113,7 @@ class CommodityController extends Controller
     public function destroy($id)
     {
         $this->commodityService->destroy($id);
-        return ReturnJson::success();
+        return ReturnJson::success(['id'=>$id]);
     }
 
 
@@ -166,4 +170,14 @@ class CommodityController extends Controller
         return $this->success();
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    public function recommendHotList(Request $request)
+    {
+        return ReturnJson::paginate($this->commodityService->getRecommendHotList($request->input('page', 1), 10));
+    }
 }

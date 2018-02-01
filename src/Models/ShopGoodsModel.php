@@ -49,6 +49,8 @@ class ShopGoodsModel extends BaseModel
         'description',
         'content',
         'hot',
+        'recommend',
+        'limit_purchase',
         'sort',
         'status',
         'unit_id',
@@ -56,15 +58,42 @@ class ShopGoodsModel extends BaseModel
         'begin_num',
         'verify'
     ];
+    /**
+     * 访问器被附加到模型数组的形式。
+     *
+     * @var array
+     */
+    protected $appends = [
+        'status_label',
+    ];
+
+
+    /**
+     * @param $value
+     * @return mixed
+     */
+    public function getStatusLabelAttribute($value)
+    {
+        $status = [
+            0 => '下架',
+            1 => '在售',
+        ];
+        return isset($status[$this->status])?$status[$this->status]:'';
+    }
 
 
     /**
      * SKU信息
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function skuInfo()
+    public function skuList()
     {
         return $this->hasMany(ShopGoodsProductModel::class, 'goods_id', 'id');
+    }
+
+    public function skuInfo()
+    {
+        return $this->hasOne(ShopGoodsProductModel::class, 'id', 'sku_id');
     }
 
     public function attrInfo()
@@ -96,7 +125,6 @@ class ShopGoodsModel extends BaseModel
         return $this->hasOne(ShopStoreModel::class, 'id', 'store_id');
     }
 
-
     /**
      * 获取商品图片
      *
@@ -110,5 +138,10 @@ class ShopGoodsModel extends BaseModel
     public function brandInfo()
     {
         return $this->hasOne(ShopBrand::class, 'id', 'brand_id');
+    }
+
+    public function units()
+    {
+        return $this->hasOne('SimpleShop\Commons\Models\ShopUnitModel', 'id', 'unit_id');
     }
 }
