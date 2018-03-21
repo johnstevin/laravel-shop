@@ -22,7 +22,11 @@ class Recommend extends Criteria
      */
     public function apply($model, Repository $repository)
     {
+<<<<<<< HEAD
         $model = $model->where('shop_goods.status', 1)->orderBy('shop_goods.recommend', 'desc')
+=======
+        $model = $model->orderBy('shop_goods.recommend', 'desc')
+>>>>>>> 9e286fa16e60cc5662ba14ef655a6b0476978e19
             ->orderBy('shop_goods.hot', 'desc');
 
         return $model;

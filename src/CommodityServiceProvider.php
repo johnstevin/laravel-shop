@@ -1,6 +1,7 @@
 <?php
 namespace SimpleShop\Commodity;
 
+<<<<<<< HEAD
 use SimpleShop\Commodity\Blade\Detail\Attr;
 use SimpleShop\Commodity\Blade\Detail\Content;
 use SimpleShop\Commodity\Blade\Detail\Crumb;
@@ -19,6 +20,21 @@ use SimpleShop\Commodity\Search\RepositoryInterface;
 use SimpleShop\Commodity\Search\SearchRepository;
 use SimpleShop\Commodity\Sku;
 use Blade;
+=======
+use App\Services\Tpl\Commodity\Detail\Attr;
+use App\Services\Tpl\Commodity\Detail\Content;
+use App\Services\Tpl\Commodity\Detail\Crumb;
+use App\Services\Tpl\Commodity\Detail\Image;
+use App\Services\Tpl\Commodity\Detail\Params;
+use App\Services\Tpl\Commodity\Index\Screening;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Contracts\Container\Container as Application;
+use Illuminate\Foundation\Application as LaravelApplication;
+use SimpleShop\Commodity\Search\RepositoryInterface;
+use SimpleShop\Commodity\Search\SearchRepository;
+use Illuminate\Support\Facades\Blade;
+use SimpleShop\Commodity\Sku;
+>>>>>>> 9e286fa16e60cc5662ba14ef655a6b0476978e19
 
 class CommodityServiceProvider extends ServiceProvider {
 
@@ -46,6 +62,7 @@ class CommodityServiceProvider extends ServiceProvider {
         $this->bootAttr();
         $this->bootContent();
         $this->bootScreening();
+<<<<<<< HEAD
         $this->bootGoodsList();
         $this->bootPaginate();
         $this->bootSearchImage();
@@ -64,6 +81,10 @@ class CommodityServiceProvider extends ServiceProvider {
         });
     }
 
+=======
+	}
+
+>>>>>>> 9e286fa16e60cc5662ba14ef655a6b0476978e19
 	/**
 	 * 初始化配置
 	 *
@@ -110,6 +131,7 @@ class CommodityServiceProvider extends ServiceProvider {
         });
 	}
 
+<<<<<<< HEAD
     public function bootRecommend()
     {
         Blade::directive('recommend', function ($expression) {
@@ -117,6 +139,8 @@ class CommodityServiceProvider extends ServiceProvider {
         });
 	}
 
+=======
+>>>>>>> 9e286fa16e60cc5662ba14ef655a6b0476978e19
     public function bootImage()
     {
         Blade::directive('image', function ($expression) {
@@ -124,6 +148,7 @@ class CommodityServiceProvider extends ServiceProvider {
         });
 	}
 
+<<<<<<< HEAD
     public function bootSearchImage()
     {
         Blade::directive('search_image', function () {
@@ -131,6 +156,8 @@ class CommodityServiceProvider extends ServiceProvider {
         });
 	}
 
+=======
+>>>>>>> 9e286fa16e60cc5662ba14ef655a6b0476978e19
     public function bootParams()
     {
         Blade::directive('params', function ($expression) {
@@ -159,6 +186,7 @@ class CommodityServiceProvider extends ServiceProvider {
         });
     }
 
+<<<<<<< HEAD
     public function bootGoodsList()
     {
         Blade::directive('goodsList', function () {
@@ -180,6 +208,8 @@ class CommodityServiceProvider extends ServiceProvider {
         });
     }
 
+=======
+>>>>>>> 9e286fa16e60cc5662ba14ef655a6b0476978e19
 	/**
 	 * Register the service provider.
 	 *

@@ -23,8 +23,12 @@ use SimpleShop\Commodity\Repositories\GoodsImagesRepository;
 use SimpleShop\Commodity\Repositories\GoodsProductRepository;
 use SimpleShop\Commodity\Repositories\GoodsRepository;
 use SimpleShop\Commons\Exceptions\DatabaseException;
+<<<<<<< HEAD
 use SimpleShop\Spec\Spec as TestSpec;
 
+=======
+use SimpleShop\Spec\Spec;
+>>>>>>> 9e286fa16e60cc5662ba14ef655a6b0476978e19
 /**
  * This is the Commodity class.
  *
@@ -104,7 +108,11 @@ class Commodity
             }
 
             if (isset($data['add_spec'])) {
+<<<<<<< HEAD
                 app(TestSpec::class)->bindGoods($goods->id, $data['add_spec']);
+=======
+                app(Spec::class)->bindGoods($goods->id, $data['add_spec']);
+>>>>>>> 9e286fa16e60cc5662ba14ef655a6b0476978e19
             }
             event(new GoodsEvent($goods->id, 'added'));
             return $goods;
